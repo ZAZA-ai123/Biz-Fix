@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand-indigo: #4f46e5;
+  --brand-violet: #7c3aed;
+  --brand-cyan: #06b6d4;
+  --brand-pink: #ec4899;
+  --brand-glow: #818cf8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(129, 140, 248, 0.4);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(129, 140, 248, 0.7);
+}
+
+/* Glass utility */
+.glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Glow text */
+.text-glow {
+  text-shadow: 0 0 20px rgba(129, 140, 248, 0.8),
+    0 0 40px rgba(124, 58, 237, 0.4);
+}
+
+/* Input focus ring */
+.nl-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.5),
+    0 0 30px rgba(79, 70, 229, 0.3);
+}
+
+/* Preserve 3d for tilt cards */
+.preserve-3d {
+  transform-style: preserve-3d;
+}

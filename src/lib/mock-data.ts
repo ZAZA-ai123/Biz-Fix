@@ -1,0 +1,335 @@
+export type Product = {
+  id: string;
+  sku: string;
+  name: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  vendor: string;
+  cost_price: number;
+  default_sell_price: number;
+  tier: "budget" | "standard" | "premium";
+  suitable_for: string[];
+  tags: string[];
+  margin_floor_percent: number;
+  preferred_margin_percent: number;
+  stock_status: "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
+  lead_time_days: number;
+  alternative_skus: string[];
+  notes: string;
+};
+
+export type Vendor = {
+  id: string;
+  name: string;
+  contact: string;
+  email: string;
+  phone: string;
+  category: string;
+  rating: number;
+  activeProducts: number;
+  totalOrders: number;
+  status: "active" | "inactive" | "pending";
+};
+
+export type Quote = {
+  id: string;
+  client: string;
+  project: string;
+  status: "draft" | "sent" | "accepted" | "declined" | "expired";
+  total: number;
+  items: number;
+  created: string;
+  expires: string;
+  margin: number;
+};
+
+export const products: Product[] = [
+  {
+    id: "1",
+    sku: "FLR-HW-001",
+    name: 'Engineered Hardwood — European Oak 7"',
+    description: 'Premium 7" wide plank European oak with UV-cured matte finish',
+    category: "Flooring",
+    subcategory: "Hardwood",
+    vendor: "Nordic Timber Co.",
+    cost_price: 8.45,
+    default_sell_price: 14.99,
+    tier: "premium",
+    suitable_for: ["residential", "commercial-light"],
+    tags: ["bestseller", "eco-certified", "wide-plank"],
+    margin_floor_percent: 35,
+    preferred_margin_percent: 44,
+    stock_status: "in_stock",
+    lead_time_days: 3,
+    alternative_skus: ["FLR-HW-002", "FLR-HW-005"],
+    notes: "Top seller Q1 2026. Restock threshold 500 sqft.",
+  },
+  {
+    id: "2",
+    sku: "FLR-LVP-010",
+    name: "Luxury Vinyl Plank — Aged Walnut",
+    description: "Waterproof LVP with attached cork underlayment, 6mm thickness",
+    category: "Flooring",
+    subcategory: "Luxury Vinyl",
+    vendor: "ProFloor Industries",
+    cost_price: 3.2,
+    default_sell_price: 6.49,
+    tier: "standard",
+    suitable_for: ["residential", "commercial", "rental"],
+    tags: ["waterproof", "pet-friendly", "click-lock"],
+    margin_floor_percent: 40,
+    preferred_margin_percent: 50,
+    stock_status: "in_stock",
+    lead_time_days: 2,
+    alternative_skus: ["FLR-LVP-011"],
+    notes: "Best value option for rental properties",
+  },
+  {
+    id: "3",
+    sku: "TILE-PRC-020",
+    name: "Italian Porcelain Tile — Carrara Look 24x24",
+    description: "Rectified porcelain with polished marble-look finish",
+    category: "Tile",
+    subcategory: "Porcelain",
+    vendor: "Italica Surfaces",
+    cost_price: 4.8,
+    default_sell_price: 9.99,
+    tier: "premium",
+    suitable_for: ["residential", "commercial", "bathroom", "kitchen"],
+    tags: ["marble-look", "rectified", "frost-resistant"],
+    margin_floor_percent: 45,
+    preferred_margin_percent: 52,
+    stock_status: "low_stock",
+    lead_time_days: 14,
+    alternative_skus: ["TILE-PRC-021", "TILE-PRC-022"],
+    notes: "Import shipment arrives April 15. Reserve for premium quotes.",
+  },
+  {
+    id: "4",
+    sku: "CNTR-QTZ-030",
+    name: "Quartz Countertop — Calacatta Gold",
+    description: "Engineered quartz slab with warm gold veining, 3cm thickness",
+    category: "Countertops",
+    subcategory: "Quartz",
+    vendor: "StoneWorks Premium",
+    cost_price: 62.0,
+    default_sell_price: 105.0,
+    tier: "premium",
+    suitable_for: ["kitchen", "bathroom", "commercial"],
+    tags: ["non-porous", "stain-resistant", "designer-pick"],
+    margin_floor_percent: 35,
+    preferred_margin_percent: 41,
+    stock_status: "in_stock",
+    lead_time_days: 7,
+    alternative_skus: ["CNTR-QTZ-031"],
+    notes: "Fabrication lead time separate. Pair with INST-CNTR service.",
+  },
+  {
+    id: "5",
+    sku: "CABT-KIT-040",
+    name: "Shaker Cabinet Set — Dove White",
+    description: "Full overlay soft-close shaker cabinets, 10x10 kitchen set",
+    category: "Cabinetry",
+    subcategory: "Kitchen Cabinets",
+    vendor: "Heritage Woodcraft",
+    cost_price: 3200.0,
+    default_sell_price: 5499.0,
+    tier: "standard",
+    suitable_for: ["kitchen", "residential"],
+    tags: ["soft-close", "all-plywood", "dovetail-drawers"],
+    margin_floor_percent: 30,
+    preferred_margin_percent: 42,
+    stock_status: "in_stock",
+    lead_time_days: 10,
+    alternative_skus: ["CABT-KIT-041", "CABT-KIT-042"],
+    notes: "Most popular kitchen config. Custom sizes +15% upcharge.",
+  },
+  {
+    id: "6",
+    sku: "PAINT-INT-050",
+    name: "Interior Premium Paint — Eggshell",
+    description: "Zero-VOC interior paint with built-in primer, coverage 400 sqft/gal",
+    category: "Paint & Finishes",
+    subcategory: "Interior Paint",
+    vendor: "ColorMaster Pro",
+    cost_price: 38.0,
+    default_sell_price: 64.99,
+    tier: "standard",
+    suitable_for: ["residential", "commercial"],
+    tags: ["zero-voc", "self-priming", "washable"],
+    margin_floor_percent: 35,
+    preferred_margin_percent: 41,
+    stock_status: "in_stock",
+    lead_time_days: 1,
+    alternative_skus: ["PAINT-INT-051"],
+    notes: "Custom color matching available. Tinting takes 24h for rare colors.",
+  },
+  {
+    id: "7",
+    sku: "PLMB-FXT-060",
+    name: "Brushed Gold Rainfall Showerhead System",
+    description: "12\" ceiling mount rainfall head with handheld wand, thermostatic valve",
+    category: "Plumbing",
+    subcategory: "Fixtures",
+    vendor: "AquaLux Systems",
+    cost_price: 285.0,
+    default_sell_price: 549.0,
+    tier: "premium",
+    suitable_for: ["bathroom", "residential", "hospitality"],
+    tags: ["brushed-gold", "thermostatic", "rain-shower"],
+    margin_floor_percent: 40,
+    preferred_margin_percent: 48,
+    stock_status: "in_stock",
+    lead_time_days: 5,
+    alternative_skus: ["PLMB-FXT-061"],
+    notes: "Matching accessories available — towel bar, robe hook, TP holder.",
+  },
+  {
+    id: "8",
+    sku: "LIGHT-PND-070",
+    name: "Modern Linear Pendant — 48\" Matte Black",
+    description: "Integrated LED linear pendant, 3000K warm white, dimmable",
+    category: "Lighting",
+    subcategory: "Pendants",
+    vendor: "LuminArc Design",
+    cost_price: 195.0,
+    default_sell_price: 379.0,
+    tier: "premium",
+    suitable_for: ["kitchen", "dining", "commercial", "office"],
+    tags: ["led", "dimmable", "modern", "matte-black"],
+    margin_floor_percent: 40,
+    preferred_margin_percent: 48,
+    stock_status: "in_stock",
+    lead_time_days: 4,
+    alternative_skus: ["LIGHT-PND-071"],
+    notes: "Popular for kitchen island installations. UL listed.",
+  },
+  {
+    id: "9",
+    sku: "FLR-CPT-080",
+    name: "Commercial Loop Carpet Tile — Graphite",
+    description: "Solution-dyed nylon carpet tile, 24x24, 10-year warranty",
+    category: "Flooring",
+    subcategory: "Carpet",
+    vendor: "ProFloor Industries",
+    cost_price: 2.1,
+    default_sell_price: 4.49,
+    tier: "budget",
+    suitable_for: ["commercial", "office", "retail"],
+    tags: ["commercial-grade", "stain-resistant", "modular"],
+    margin_floor_percent: 45,
+    preferred_margin_percent: 53,
+    stock_status: "in_stock",
+    lead_time_days: 2,
+    alternative_skus: ["FLR-CPT-081"],
+    notes: "Minimum order 200 sqft. Bulk pricing available >1000 sqft.",
+  },
+  {
+    id: "10",
+    sku: "HDWR-DOOR-090",
+    name: "Solid Core Interior Door — 6-Panel",
+    description: '80" solid core MDF door, pre-hung with frame, primed white',
+    category: "Doors & Hardware",
+    subcategory: "Interior Doors",
+    vendor: "Heritage Woodcraft",
+    cost_price: 145.0,
+    default_sell_price: 269.0,
+    tier: "standard",
+    suitable_for: ["residential", "commercial-light"],
+    tags: ["solid-core", "pre-hung", "paintable"],
+    margin_floor_percent: 35,
+    preferred_margin_percent: 46,
+    stock_status: "in_stock",
+    lead_time_days: 3,
+    alternative_skus: ["HDWR-DOOR-091"],
+    notes: "Custom sizes available at +$85/door. Stain-grade oak +$180.",
+  },
+  {
+    id: "11",
+    sku: "TILE-BKSP-100",
+    name: 'Subway Tile — Glossy White 3x6"',
+    description: "Classic ceramic subway tile with glossy finish, beveled edges",
+    category: "Tile",
+    subcategory: "Ceramic",
+    vendor: "Italica Surfaces",
+    cost_price: 0.89,
+    default_sell_price: 2.29,
+    tier: "budget",
+    suitable_for: ["kitchen", "bathroom", "backsplash"],
+    tags: ["classic", "beveled", "glossy"],
+    margin_floor_percent: 50,
+    preferred_margin_percent: 61,
+    stock_status: "in_stock",
+    lead_time_days: 1,
+    alternative_skus: ["TILE-BKSP-101"],
+    notes: "Perennial best seller for backsplash projects.",
+  },
+  {
+    id: "12",
+    sku: "CNTR-GRNT-110",
+    name: "Granite Slab — Absolute Black",
+    description: "Polished black granite slab, 3cm, premium grade A",
+    category: "Countertops",
+    subcategory: "Granite",
+    vendor: "StoneWorks Premium",
+    cost_price: 45.0,
+    default_sell_price: 79.99,
+    tier: "standard",
+    suitable_for: ["kitchen", "bathroom", "outdoor-kitchen"],
+    tags: ["polished", "heat-resistant", "natural-stone"],
+    margin_floor_percent: 35,
+    preferred_margin_percent: 44,
+    stock_status: "made_to_order",
+    lead_time_days: 21,
+    alternative_skus: ["CNTR-QTZ-030"],
+    notes: "Slab selection appointment recommended. Sealing required annually.",
+  },
+];
+
+export const vendors: Vendor[] = [
+  { id: "1", name: "Nordic Timber Co.", contact: "Erik Lindström", email: "erik@nordictimber.com", phone: "(555) 234-5678", category: "Flooring", rating: 4.8, activeProducts: 24, totalOrders: 156, status: "active" },
+  { id: "2", name: "ProFloor Industries", contact: "Sarah Chen", email: "sarah@profloor.com", phone: "(555) 345-6789", category: "Flooring", rating: 4.6, activeProducts: 38, totalOrders: 289, status: "active" },
+  { id: "3", name: "Italica Surfaces", contact: "Marco Rossi", email: "marco@italicasurfaces.it", phone: "+39 055 123 4567", category: "Tile", rating: 4.9, activeProducts: 42, totalOrders: 198, status: "active" },
+  { id: "4", name: "StoneWorks Premium", contact: "David Park", email: "david@stoneworks.com", phone: "(555) 456-7890", category: "Countertops", rating: 4.7, activeProducts: 18, totalOrders: 134, status: "active" },
+  { id: "5", name: "Heritage Woodcraft", contact: "Tom Harrison", email: "tom@heritagewood.com", phone: "(555) 567-8901", category: "Cabinetry", rating: 4.5, activeProducts: 31, totalOrders: 167, status: "active" },
+  { id: "6", name: "ColorMaster Pro", contact: "Lisa Martinez", email: "lisa@colormasterpro.com", phone: "(555) 678-9012", category: "Paint & Finishes", rating: 4.4, activeProducts: 56, totalOrders: 312, status: "active" },
+  { id: "7", name: "AquaLux Systems", contact: "James Wright", email: "james@aqualux.com", phone: "(555) 789-0123", category: "Plumbing", rating: 4.7, activeProducts: 28, totalOrders: 95, status: "active" },
+  { id: "8", name: "LuminArc Design", contact: "Anika Patel", email: "anika@luminarc.com", phone: "(555) 890-1234", category: "Lighting", rating: 4.8, activeProducts: 35, totalOrders: 143, status: "active" },
+  { id: "9", name: "BuildRight Supply", contact: "Mike Johnson", email: "mike@buildright.com", phone: "(555) 901-2345", category: "General", rating: 4.2, activeProducts: 0, totalOrders: 45, status: "inactive" },
+];
+
+export const quotes: Quote[] = [
+  { id: "QT-2026-001", client: "Riverside Condos LLC", project: "Unit 4B Full Renovation", status: "accepted", total: 34250.0, items: 18, created: "2026-03-15", expires: "2026-04-15", margin: 42.3 },
+  { id: "QT-2026-002", client: "Oakwood Dental Group", project: "Reception & Waiting Area", status: "sent", total: 18900.0, items: 12, created: "2026-03-22", expires: "2026-04-22", margin: 38.7 },
+  { id: "QT-2026-003", client: "Thompson Residence", project: "Master Bath Remodel", status: "draft", total: 12450.0, items: 9, created: "2026-03-28", expires: "2026-04-28", margin: 45.1 },
+  { id: "QT-2026-004", client: "Metro Coffee Roasters", project: "New Flagship Store Buildout", status: "sent", total: 52800.0, items: 26, created: "2026-03-20", expires: "2026-04-20", margin: 40.2 },
+  { id: "QT-2026-005", client: "Greenfield School District", project: "Cafeteria Floor Replacement", status: "accepted", total: 28600.0, items: 8, created: "2026-03-10", expires: "2026-04-10", margin: 51.4 },
+  { id: "QT-2026-006", client: "Chen Family", project: "Kitchen & Dining Renovation", status: "declined", total: 22100.0, items: 15, created: "2026-03-05", expires: "2026-04-05", margin: 39.8 },
+  { id: "QT-2026-007", client: "Apex Real Estate Group", project: "Model Unit Staging Materials", status: "expired", total: 8750.0, items: 6, created: "2026-02-15", expires: "2026-03-15", margin: 44.5 },
+  { id: "QT-2026-008", client: "Harbor View Hotel", project: "Lobby & Lounge Refresh", status: "draft", total: 67200.0, items: 32, created: "2026-03-29", expires: "2026-04-29", margin: 37.6 },
+];
+
+export const categories = [
+  "Flooring",
+  "Tile",
+  "Countertops",
+  "Cabinetry",
+  "Paint & Finishes",
+  "Plumbing",
+  "Lighting",
+  "Doors & Hardware",
+  "Appliances",
+  "Outdoor",
+];
+
+export const dashboardStats = {
+  totalRevenue: 245150,
+  activeQuotes: 12,
+  acceptedThisMonth: 4,
+  avgMargin: 42.3,
+  catalogProducts: 156,
+  activeVendors: 8,
+  quotesThisMonth: 8,
+  conversionRate: 62.5,
+};

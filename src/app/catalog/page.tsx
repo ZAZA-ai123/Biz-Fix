@@ -255,59 +255,73 @@ export default function CatalogPage() {
       .filter(Boolean);
   }
 
-  function submitProduct() {
+  async function submitProduct() {
     const cost = parseFloat(form.cost_price);
     const sell = parseFloat(form.default_sell_price);
     const lead = parseInt(form.lead_time_days, 10);
     const floor = parseFloat(form.margin_floor_percent);
     const pref = parseFloat(form.preferred_margin_percent);
-    if (!form.sku.trim() || !form.name.trim() || Number.isNaN(cost) || Number.isNaN(sell)) {
-      return;
-    }
+    if (!form.sku.trim() || !form.name.trim() || Number.isNaN(cost) || Number.isNaN(sell)) return;
 
-    const payload: Product = {
-      id: editingId ?? crypto.randomUUID(),
+    const body = {
+      id: editingId,
       sku: form.sku.trim(),
       name: form.name.trim(),
       description: form.description.trim(),
       category: form.category,
       subcategory: form.subcategory.trim(),
-      vendor: form.vendor.trim(),
-      cost_price: cost,
-      default_sell_price: sell,
+      costPrice: cost,
+      sellPrice: sell,
       tier: form.tier,
-      suitable_for: [],
       tags: parseTags(form.tags),
-      margin_floor_percent: Number.isNaN(floor) ? 0 : floor,
-      preferred_margin_percent: Number.isNaN(pref) ? 0 : pref,
-      stock_status: form.stock_status,
-      lead_time_days: Number.isNaN(lead) ? 0 : lead,
-      alternative_skus: [],
-      notes: form.notes.trim(),
+      suitableFor: [],
+      marginFloorPercent: Number.isNaN(floor) ? 0 : floor,
+      preferredMarginPercent: Number.isNaN(pref) ? 0 : pref,
+      stockStatus: form.stock_status,
+      leadTimeDays: Number.isNaN(lead) ? 0 : lead,
+      qualityNotes: form.notes.trim(),
     };
 
-    setItems((prev) => {
-      if (editingId) {
-        return prev.map((p) => (p.id === editingId ? { ...p, ...payload, id: editingId } : p));
-      }
-      return [...prev, payload];
-    });
+    if (editingId) {
+      await fetch("/api/db/products", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    } else {
+      await fetch("/api/db/products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    }
+
+    const fresh = await fetch("/api/db/products").then((r) => r.json());
+    setItems(fresh);
     setDialogOpen(false);
     setEditingId(null);
     setForm(emptyForm);
   }
 
-  function duplicateProduct(p: Product) {
-    const copy: Product = {
-      ...p,
-      id: crypto.randomUUID(),
-      sku: `${p.sku}-COPY`,
-      name: `${p.name} (copy)`,
-    };
-    setItems((prev) => [...prev, copy]);
+  async function duplicateProduct(p: Product) {
+    await fetch("/api/db/products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        sku: `${p.sku}-COPY`,
+        name: `${p.name} (copy)`,
+        description: p.description,
+        category: p.category,
+        subcategory: p.subcategory,
+        costPrice: p.cost_price,
+        sellPrice: p.default_sell_price,
+        tier: p.tier,
+        tags: p.tags,
+        suitableFor: p.suitable_for,
+        marginFloorPercent: p.margin_floor_percent,
+        preferredMarginPercent: p.preferred_margin_percent,
+        stockStatus: p.stock_status,
+        leadTimeDays: p.lead_time_days,
+      }),
+    });
+    const fresh = await fetch("/api/db/products").then((r) => r.json());
+    setItems(fresh);
   }
 
-  function deleteProduct(id: string) {
+  async function deleteProduct(id: string) {
+    await fetch(`/api/db/products?id=${id}`, { method: "DELETE" });
     setItems((prev) => prev.filter((p) => p.id !== id));
     setSelected((prev) => {
       const next = new Set(prev);

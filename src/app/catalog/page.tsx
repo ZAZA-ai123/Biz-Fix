@@ -16,8 +16,27 @@ import {
   Percent,
 } from "lucide-react";
 import { cn, formatCurrency, formatPercent } from "@/lib/utils";
-import { products as seedProducts, categories } from "@/lib/mock-data";
-import type { Product } from "@/lib/mock-data";
+type Product = {
+  id: string;
+  sku: string;
+  name: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  vendor: string;
+  vendorId: string | null;
+  cost_price: number;
+  default_sell_price: number;
+  tier: "budget" | "standard" | "premium";
+  tags: string[];
+  suitable_for: string[];
+  margin_floor_percent: number;
+  preferred_margin_percent: number;
+  stock_status: "in_stock" | "low_stock" | "out_of_stock" | "made_to_order";
+  lead_time_days: number;
+  notes: string;
+  alternative_skus: string[];
+};
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -96,11 +115,13 @@ function tierLabel(tier: Product["tier"]) {
   return tier.charAt(0).toUpperCase() + tier.slice(1);
 }
 
+const EDTECH_CATEGORIES = ["LMS", "Interactive Display", "Student Device", "VR/AR", "Analytics", "Assessment", "STEM Kit", "Security", "Other"];
+
 const emptyForm = {
   sku: "",
   name: "",
   description: "",
-  category: categories[0] ?? "",
+  category: EDTECH_CATEGORIES[0] ?? "",
   subcategory: "",
   vendor: "",
   cost_price: "",
@@ -115,7 +136,11 @@ const emptyForm = {
 };
 
 export default function CatalogPage() {
-  const [items, setItems] = React.useState<Product[]>(() => [...seedProducts]);
+  const [items, setItems] = React.useState<Product[]>([]);
+
+  React.useEffect(() => {
+    fetch("/api/db/products").then((r) => r.json()).then(setItems).catch(() => {});
+  }, []);
   const [search, setSearch] = React.useState("");
   const [categoryFilter, setCategoryFilter] = React.useState<string>(ALL);
   const [tierFilter, setTierFilter] = React.useState<string>(ALL);

@@ -17,6 +17,8 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
+  TrendingUp,
+  FlaskConical,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
@@ -36,6 +38,11 @@ const catalogNav = [
 const manageNav = [
   { label: "Vendors", href: "/vendors", icon: Store },
   { label: "Settings", href: "/settings", icon: Settings },
+];
+
+const intelligenceNav = [
+  { label: "Sales", href: "/sales", icon: TrendingUp },
+  { label: "Research Agent", href: "/research", icon: FlaskConical },
 ];
 
 export function Sidebar() {
@@ -78,6 +85,12 @@ export function Sidebar() {
 
         <NavSection label="Manage" collapsed={collapsed}>
           {manageNav.map((item) => (
+            <NavItem key={item.href} item={item} pathname={pathname} collapsed={collapsed} />
+          ))}
+        </NavSection>
+
+        <NavSection label="Intelligence" collapsed={collapsed}>
+          {intelligenceNav.map((item) => (
             <NavItem key={item.href} item={item} pathname={pathname} collapsed={collapsed} />
           ))}
         </NavSection>

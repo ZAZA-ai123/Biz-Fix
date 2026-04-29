@@ -3,7 +3,16 @@ import type { QuoteRequest } from "./types";
 // Keyword maps for extracting item types from natural language
 const ITEM_KEYWORDS: Record<string, string[]> = {
   chair: ["chair", "chairs", "seating", "seat", "seats"],
-  table: ["table", "tables", "desk", "desks", "workstation", "workstations"],
+  table: [
+    "table",
+    "tables",
+    "desk",
+    "desks",
+    "workstation",
+    "workstations",
+    "teacher station",
+    "teacher stations",
+  ],
   flooring: ["floor", "floors", "flooring", "hardwood", "vinyl", "lvp", "carpet", "tile"],
   countertop: ["countertop", "countertops", "counter", "counters", "bench", "benches", "worktop"],
   cabinet: ["cabinet", "cabinets", "cabinetry", "cupboard", "storage"],
@@ -45,9 +54,18 @@ function extractMargin(text: string): number | undefined {
 }
 
 function extractCustomerName(text: string): string | undefined {
-  // "for <Name>" at the start, or "quote for <Name>"
-  const match = text.match(/(?:quote\s+for|for)\s+([A-Z][A-Za-z0-9\s&'-]{1,40}?)(?:\s+(?:a|an|the|with|,|$))/);
-  return match ? match[1].trim() : undefined;
+  // "quote for Acme Corp for a ..." → stop before second "for a/an/the"
+  const bridge = text.match(/(?:quote\s+for|for)\s+(.+?)(?=\s+for\s+(?:a|an|the)\s+)/i);
+  if (bridge) {
+    const n = bridge[1].trim().replace(/\s+/g, " ");
+    if (n.length >= 2) return n;
+  }
+  const fallback = text.match(/quote\s+for\s+([^,.]+?)(?=,|\.|\s+—|$)/i);
+  if (fallback) {
+    const n = fallback[1].trim();
+    if (n.length >= 2) return n;
+  }
+  return undefined;
 }
 
 function extractProjectType(text: string): string | undefined {

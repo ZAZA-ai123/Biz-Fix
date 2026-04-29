@@ -3,125 +3,98 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
-import {
-  LayoutDashboard,
-  FileText,
-  PenTool,
-  Package,
-  Upload,
-  Settings2,
-  Store,
-  ScrollText,
-  Settings,
-  Sparkles,
-  ChevronLeft,
-  ChevronRight,
-  TrendingUp,
-  FlaskConical,
-} from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-
-const mainNav = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "New Quote", href: "/new-quote", icon: Sparkles },
-  { label: "Quote Studio", href: "/quote-studio", icon: PenTool },
-  { label: "Quotes", href: "/quotes", icon: ScrollText },
-];
-
-const catalogNav = [
-  { label: "Products", href: "/catalog", icon: Package },
-  { label: "Import", href: "/catalog/import", icon: Upload },
-  { label: "Rules & Config", href: "/catalog/rules", icon: Settings2 },
-];
-
-const manageNav = [
-  { label: "Vendors", href: "/vendors", icon: Store },
-  { label: "Settings", href: "/settings", icon: Settings },
-];
-
-const intelligenceNav = [
-  { label: "Sales", href: "/sales", icon: TrendingUp },
-  { label: "Research Agent", href: "/research", icon: FlaskConical },
-];
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { workspaceMainNav, workspaceSecondaryNav, type WorkspaceNavItem } from "./nav-config";
 
 export function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = React.useState(false);
+  const { user } = useUser();
+
+  const displayName =
+    user?.fullName ??
+    user?.primaryEmailAddress?.emailAddress ??
+    "User";
+  const initials = displayName
+    .split(" ")
+    .map((w: string) => w[0] ?? "")
+    .join("")
+    .slice(0, 2)
+    .toUpperCase() || "U";
+  const companyName = (user?.publicMetadata?.companyName as string | undefined) ?? "Biz-Fix";
 
   return (
     <aside
       className={cn(
-        "flex flex-col h-full bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out relative group",
-        collapsed ? "w-[68px]" : "w-[260px]"
+        "relative hidden h-full min-h-0 shrink-0 flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-200 ease-out md:flex",
+        collapsed ? "md:w-[60px]" : "md:w-60 lg:w-[248px]"
       )}
     >
-      <div className={cn("flex items-center gap-3 px-5 h-16 shrink-0", collapsed && "justify-center px-0")}>
-        <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary text-primary-foreground font-bold text-base shrink-0">
+      {/* Logo / company */}
+      <div
+        className={cn(
+          "flex h-14 shrink-0 items-center gap-3 border-b border-sidebar-border px-3 md:px-4",
+          collapsed && "justify-center px-0"
+        )}
+      >
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground shadow-sm">
           B
         </div>
         {!collapsed && (
-          <div className="flex flex-col min-w-0">
-            <span className="font-bold text-[15px] text-foreground tracking-tight">Biz-Fix</span>
-            <span className="text-[11px] text-muted-foreground leading-none">Quote Operating System</span>
-          </div>
+          <span className="block min-w-0 truncate text-sm font-semibold tracking-tight text-foreground">
+            {companyName}
+          </span>
         )}
       </div>
 
-      <Separator />
-
-      <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-6">
-        <NavSection label="Main" collapsed={collapsed}>
-          {mainNav.map((item) => (
+      {/* Nav */}
+      <nav className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain px-2 py-3">
+        <NavSection label="Menu" collapsed={collapsed}>
+          {workspaceMainNav.map((item) => (
             <NavItem key={item.href} item={item} pathname={pathname} collapsed={collapsed} />
           ))}
         </NavSection>
 
-        <NavSection label="Catalog" collapsed={collapsed}>
-          {catalogNav.map((item) => (
-            <NavItem key={item.href} item={item} pathname={pathname} collapsed={collapsed} />
-          ))}
-        </NavSection>
-
-        <NavSection label="Manage" collapsed={collapsed}>
-          {manageNav.map((item) => (
-            <NavItem key={item.href} item={item} pathname={pathname} collapsed={collapsed} />
-          ))}
-        </NavSection>
-
-        <NavSection label="Intelligence" collapsed={collapsed}>
-          {intelligenceNav.map((item) => (
+        <NavSection label="Account" collapsed={collapsed}>
+          {workspaceSecondaryNav.map((item) => (
             <NavItem key={item.href} item={item} pathname={pathname} collapsed={collapsed} />
           ))}
         </NavSection>
       </nav>
 
-      <div className="p-3 border-t border-sidebar-border">
-        {!collapsed && (
-          <div className="flex items-center gap-3 px-2 py-2 rounded-lg bg-accent/50">
-            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm">
-              ZS
+      {/* User identity */}
+      <div className="shrink-0 border-t border-sidebar-border p-2">
+        {!collapsed ? (
+          <div className="flex items-center gap-2.5 rounded-lg px-2 py-2 hover:bg-muted/60 transition-colors">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-primary-foreground">
+              {initials}
             </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-sm font-medium text-foreground truncate">Zoravar Singh</span>
-              <span className="text-[11px] text-muted-foreground truncate">Admin</span>
+            <div className="min-w-0">
+              <span className="block truncate text-[13px] font-medium leading-tight text-foreground">
+                {displayName}
+              </span>
+              <span className="block text-[11px] text-muted-foreground">Admin</span>
             </div>
           </div>
-        )}
-        {collapsed && (
-          <div className="flex justify-center">
-            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm">
-              ZS
+        ) : (
+          <div className="flex justify-center py-1">
+            <div className="flex size-8 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-primary-foreground" title={displayName}>
+              {initials}
             </div>
           </div>
         )}
       </div>
 
+      {/* Collapse toggle — always visible, not hover-only */}
       <button
+        type="button"
         onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-3 top-20 w-6 h-6 rounded-full bg-card border border-border shadow-sm flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors opacity-0 group-hover:opacity-100 z-10 cursor-pointer"
+        className="absolute -right-3 top-[4.5rem] z-10 flex size-6 cursor-pointer items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground"
+        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
-        {collapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
+        {collapsed ? <ChevronRight className="size-3" /> : <ChevronLeft className="size-3" />}
       </button>
     </aside>
   );
@@ -137,13 +110,12 @@ function NavSection({
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-1">
+    <div className="space-y-0.5">
       {!collapsed && (
-        <p className="px-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 mb-2">
+        <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/60">
           {label}
         </p>
       )}
-      {collapsed && <Separator className="mb-2" />}
       {children}
     </div>
   );
@@ -154,27 +126,35 @@ function NavItem({
   pathname,
   collapsed,
 }: {
-  item: { label: string; href: string; icon: React.ComponentType<{ className?: string }> };
+  item: WorkspaceNavItem;
   pathname: string;
   collapsed: boolean;
 }) {
-  const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href + "/"));
+  const isActive =
+    pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href + "/"));
   const Icon = item.icon;
 
   return (
     <Link
       href={item.href}
+      title={collapsed ? item.label : undefined}
       className={cn(
-        "flex items-center gap-3 px-2.5 py-2 rounded-lg text-sm font-medium transition-all duration-150",
+        "flex min-h-9 items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors",
         collapsed && "justify-center px-0",
         isActive
-          ? "bg-sidebar-accent text-primary shadow-sm"
-          : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-foreground"
+          ? "bg-accent text-accent-foreground shadow-sm"
+          : "text-sidebar-foreground hover:bg-muted/80 hover:text-foreground"
       )}
-      title={collapsed ? item.label : undefined}
     >
-      <Icon className={cn("w-[18px] h-[18px] shrink-0", isActive && "text-primary")} />
-      {!collapsed && <span>{item.label}</span>}
+      <Icon
+        className={cn(
+          "size-4 shrink-0",
+          isActive ? "text-primary" : "text-muted-foreground"
+        )}
+      />
+      {!collapsed && (
+        <span className="min-w-0 flex-1 truncate">{item.label}</span>
+      )}
     </Link>
   );
 }

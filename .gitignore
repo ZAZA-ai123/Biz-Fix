@@ -28,3 +28,14 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# clerk configuration (can include secrets)
+/.clerk/
+
+# editor / tooling
+/.cursor/
+/.packet28/
+
+# sqlite transient files
+*.db-shm
+*.db-wal

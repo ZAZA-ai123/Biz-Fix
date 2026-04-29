@@ -3,6 +3,7 @@ import { buildQuote } from "./build-quote";
 import { matchProducts } from "./match-products";
 import { rankProducts } from "./rank-products";
 import { applyRules, buildQuoteItem } from "./apply-rules";
+import { attachQuoteDocument } from "./quote-document";
 
 type RefinementIntent =
   | { kind: "adjust_margin"; marginPercent: number }
@@ -72,7 +73,7 @@ export function refineQuote(
       })),
       marginPercent: intent.marginPercent,
     };
-    return buildQuote(request, catalog);
+    return buildQuote(request, catalog, { quoteId: current.id });
   }
 
   if (intent.kind === "adjust_positioning") {
@@ -86,7 +87,7 @@ export function refineQuote(
       })),
       marginPercent: current.items[0]?.marginPercent,
     };
-    return buildQuote(request, catalog);
+    return buildQuote(request, catalog, { quoteId: current.id });
   }
 
   if (intent.kind === "adjust_total_percent") {
@@ -103,7 +104,7 @@ export function refineQuote(
     const subtotal = parseFloat(
       updatedItems.reduce((s, i) => s + i.lineTotal, 0).toFixed(2)
     );
-    return {
+    return attachQuoteDocument({
       ...current,
       id: current.id,
       items: updatedItems,
@@ -113,24 +114,24 @@ export function refineQuote(
         ...current.assumptions,
         `Total adjusted by ${intent.delta > 0 ? "+" : ""}${intent.delta}%.`,
       ],
-    };
+    });
   }
 
   if (intent.kind === "swap_item") {
-    const targetType = intent.itemType;
-    const itemIndex = current.items.findIndex(
-      (i) => i.requestedType.toLowerCase().includes(targetType) ||
-              targetType.includes(i.requestedType.toLowerCase())
-    );
+    const targetType = intent.itemType.toLowerCase().replace(/s$/, "");
+    const itemIndex = current.items.findIndex((i) => {
+      const rt = i.requestedType.toLowerCase().replace(/s$/, "");
+      return rt.includes(targetType) || targetType.includes(rt) || rt === targetType;
+    });
 
     if (itemIndex === -1) {
-      return {
+      return attachQuoteDocument({
         ...current,
         assumptions: [
           ...current.assumptions,
           `Could not find item of type "${targetType}" to swap.`,
         ],
-      };
+      });
     }
 
     const existing = current.items[itemIndex];
@@ -146,13 +147,13 @@ export function refineQuote(
     const ranked = rankProducts(alternatives, request);
 
     if (ranked.length === 0) {
-      return {
+      return attachQuoteDocument({
         ...current,
         assumptions: [
           ...current.assumptions,
           `No alternative found for "${existing.requestedType}".`,
         ],
-      };
+      });
     }
 
     const newProduct = ranked[0];
@@ -165,7 +166,7 @@ export function refineQuote(
       updatedItems.reduce((s, i) => s + i.lineTotal, 0).toFixed(2)
     );
 
-    return {
+    return attachQuoteDocument({
       ...current,
       items: updatedItems,
       subtotal,
@@ -174,15 +175,15 @@ export function refineQuote(
         ...current.assumptions,
         `Swapped ${existing.sku} → ${newProduct.sku} for "${existing.requestedType}".`,
       ],
-    };
+    });
   }
 
   // Unknown: return unchanged with a note
-  return {
+  return attachQuoteDocument({
     ...current,
     assumptions: [
       ...current.assumptions,
       `Refinement not understood: "${message}". No changes made.`,
     ],
-  };
+  });
 }

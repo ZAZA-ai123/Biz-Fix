@@ -18,10 +18,27 @@ function tierMatchScore(product: Product, positioning?: QuoteRequest["positionin
   return product.tier === positioning ? 10 : 0;
 }
 
+const PROJECT_TAG_BONUS: Record<string, string[]> = {
+  school: ["school", "education", "classroom", "student"],
+  "science lab": ["lab", "laboratory", "science", "school", "education", "stem"],
+  commercial: ["commercial", "office", "retail"],
+  office: ["office", "commercial", "workspace"],
+  kitchen: ["kitchen", "cabinet", "counter"],
+  bathroom: ["bathroom", "bath", "plumb"],
+};
+
 function projectTypeScore(product: Product, projectType?: string): number {
   if (!projectType) return 0;
   const pt = projectType.toLowerCase();
-  return product.suitable_for.some((sf) => sf.toLowerCase().includes(pt)) ? 8 : 0;
+  let score = 0;
+  if (product.suitable_for.some((sf) => sf.toLowerCase().includes(pt))) score += 8;
+  if (product.tags.some((tag) => tag.toLowerCase().includes(pt))) score += 5;
+  const bonus = PROJECT_TAG_BONUS[pt];
+  if (bonus) {
+    const hay = [...product.tags, ...product.suitable_for].map((s) => s.toLowerCase());
+    if (bonus.some((b) => hay.some((h) => h.includes(b)))) score += 4;
+  }
+  return score;
 }
 
 function leadTimeScore(product: Product): number {

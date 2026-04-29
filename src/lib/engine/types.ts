@@ -2,6 +2,16 @@ import type { Product } from "@/lib/mock-data";
 
 export type { Product };
 
+export type QuoteDocument = {
+  title: string;
+  summary: string;
+  scopeOfWork: string[];
+  commercialTerms: string[];
+  assumptions: string[];
+  exclusions: string[];
+  acceptance: string;
+};
+
 export type QuoteRequest = {
   customerName?: string;
   projectType?: string;
@@ -38,4 +48,5 @@ export type EngineQuote = {
   subtotal: number;
   total: number;
   assumptions: string[];
+  document: QuoteDocument;
 };

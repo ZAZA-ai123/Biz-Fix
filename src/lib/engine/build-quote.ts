@@ -3,11 +3,21 @@ import type { Product, QuoteRequest, EngineQuote } from "./types";
 import { matchProducts } from "./match-products";
 import { rankProducts } from "./rank-products";
 import { applyRules, buildQuoteItem } from "./apply-rules";
+import { attachQuoteDocument } from "./quote-document";
+
+export type BuildQuoteOptions = {
+  /** Keep the same quote id when rebuilding (e.g. AI refinement). */
+  quoteId?: string;
+};
 
 /**
  * Assemble a full quote from a structured QuoteRequest and a product catalog.
  */
-export function buildQuote(request: QuoteRequest, catalog: Product[]): EngineQuote {
+export function buildQuote(
+  request: QuoteRequest,
+  catalog: Product[],
+  options?: BuildQuoteOptions
+): EngineQuote {
   const assumptions: string[] = [];
   const items = [];
 
@@ -55,8 +65,18 @@ export function buildQuote(request: QuoteRequest, catalog: Product[]): EngineQuo
     assumptions.push(`Target margin of ${request.marginPercent}% applied per line.`);
   }
 
-  return {
-    id: `QT-${new Date().getFullYear()}-${randomUUID().slice(0, 6).toUpperCase()}`,
+  if (items.length === 0 && request.requestedItems.length > 0) {
+    assumptions.push(
+      "No catalog lines were added — adjust wording or expand the catalog for the requested categories."
+    );
+  }
+
+  const id =
+    options?.quoteId ??
+    `QT-${new Date().getFullYear()}-${randomUUID().slice(0, 6).toUpperCase()}`;
+
+  return attachQuoteDocument({
+    id,
     customerName: request.customerName,
     projectType: request.projectType,
     positioning: request.positioning,
@@ -64,5 +84,5 @@ export function buildQuote(request: QuoteRequest, catalog: Product[]): EngineQuo
     subtotal,
     total: subtotal, // taxes / install costs can be layered on top later
     assumptions,
-  };
+  });
 }

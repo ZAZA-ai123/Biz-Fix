@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
-import { AppShell } from "@/components/layout/app-shell";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Biz-Fix — AI Quote Operating System",
-  description: "Premium AI-powered quote operating system for vendors. Manage catalogs, generate quotes, and close deals faster.",
+  description: "Turn prompts and purchase orders into polished quotes, then refine them in Quote Studio.",
 };
 
 export default function RootLayout({
@@ -26,10 +26,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} h-full min-h-dvh antialiased`}
     >
-      <body className="h-full">
-        <AppShell>{children}</AppShell>
+      <body className="min-h-dvh bg-background text-foreground antialiased">
+        <ClerkProvider>{children}</ClerkProvider>
       </body>
     </html>
   );
